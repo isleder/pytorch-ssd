@@ -15,7 +15,11 @@ model_path = sys.argv[2]
 label_path = sys.argv[3]
 
 if len(sys.argv) >= 5:
-    cap = cv2.VideoCapture(sys.argv[4])  # capture from file
+    try:
+        camid = int(sys.argv[4])
+        cap = cv2.VideoCapture(camid)  # capture from file
+    except ValueError:
+        cap = cv2.VideoCapture(sys.argv[4])  # capture from file
 else:
     cap = cv2.VideoCapture(0)   # capture from camera
     cap.set(3, 1920)
