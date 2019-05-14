@@ -86,6 +86,7 @@ class SSD(nn.Module):
 
         confidences = torch.cat(confidences, 1)
         locations = torch.cat(locations, 1)
+        locations = locations.to(self.device)
         
         if self.is_test:
             confidences = F.softmax(confidences, dim=2)
@@ -154,6 +155,7 @@ class MatchPrior(object):
         boxes, labels = box_utils.assign_priors(gt_boxes, gt_labels,
                                                 self.corner_form_priors, self.iou_threshold)
         boxes = box_utils.corner_form_to_center_form(boxes)
+
         locations = box_utils.convert_boxes_to_locations(boxes, self.center_form_priors, self.center_variance, self.size_variance)
         return locations, labels
 
