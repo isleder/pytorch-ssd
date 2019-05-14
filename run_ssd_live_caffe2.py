@@ -61,7 +61,13 @@ class_names = [name.strip() for name in open(label_path).readlines()]
 predictor = load_model(init_net_path, predict_net_path)
 
 if len(sys.argv) >= 5:
-    cap = cv2.VideoCapture(sys.argv[4])  # capture from file
+    if sys.argv[4].isdigit:
+        cap = cv2.VideoCapture(int(sys.argv[4]))
+        cap.set(3, 1280)
+        cap.set(4, 720)
+    else:
+        cap = cv2.VideoCapture(sys.argv[4])  # capture from file
+
 else:
     cap = cv2.VideoCapture(0)   # capture from camera
     cap.set(3, 1920)
