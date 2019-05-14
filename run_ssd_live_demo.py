@@ -14,11 +14,12 @@ net_type = sys.argv[1]
 model_path = sys.argv[2]
 label_path = sys.argv[3]
 
-if len(sys.argv) >= 5:
-    try:
-        camid = int(sys.argv[4])
-        cap = cv2.VideoCapture(camid)  # capture from file
-    except ValueError:
+if len(sys.argv) >= 5:    
+    if sys.argv[4].isdigit:
+        cap = cv2.VideoCapture(int(sys.argv[4]))
+        cap.set(3, 1280)
+        cap.set(4, 720)
+    else:
         cap = cv2.VideoCapture(sys.argv[4])  # capture from file
 else:
     cap = cv2.VideoCapture(0)   # capture from camera
