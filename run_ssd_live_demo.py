@@ -6,6 +6,7 @@ from vision.ssd.mobilenet_v2_ssd_lite import create_mobilenetv2_ssd_lite, create
 from vision.utils.misc import Timer
 import cv2
 import sys
+import torch
 
 if len(sys.argv) < 4:
     print('Usage: python run_ssd_example.py <net type>  <model path> <label path> [video file]')
@@ -14,7 +15,7 @@ net_type = sys.argv[1]
 model_path = sys.argv[2]
 label_path = sys.argv[3]
 
-if len(sys.argv) >= 5:    
+if len(sys.argv) >= 5:
     if sys.argv[4].isdigit:
         cap = cv2.VideoCapture(int(sys.argv[4]))
         cap.set(3, 1280)
@@ -28,6 +29,12 @@ else:
 
 class_names = [name.strip() for name in open(label_path).readlines()]
 num_classes = len(class_names)
+
+
+device = "cpu"
+if torch.cuda.is_available():
+    device = "cuda:0"
+    torch.cuda.empty_cache()
 
 
 if net_type == 'vgg16-ssd':
@@ -46,15 +53,15 @@ else:
 net.load(model_path)
 
 if net_type == 'vgg16-ssd':
-    predictor = create_vgg_ssd_predictor(net, candidate_size=200)
+    predictor = create_vgg_ssd_predictor(net, candidate_size=200, device=device)
 elif net_type == 'mb1-ssd':
-    predictor = create_mobilenetv1_ssd_predictor(net, candidate_size=200)
+    predictor = create_mobilenetv1_ssd_predictor(net, candidate_size=200, device=device)
 elif net_type == 'mb1-ssd-lite':
-    predictor = create_mobilenetv1_ssd_lite_predictor(net, candidate_size=200)
+    predictor = create_mobilenetv1_ssd_lite_predictor(net, candidate_size=200, device=device)
 elif net_type == 'mb2-ssd-lite':
-    predictor = create_mobilenetv2_ssd_lite_predictor(net, candidate_size=200)
+    predictor = create_mobilenetv2_ssd_lite_predictor(net, candidate_size=200, device=device)
 elif net_type == 'sq-ssd-lite':
-    predictor = create_squeezenet_ssd_lite_predictor(net, candidate_size=200)
+    predictor = create_squeezenet_ssd_lite_predictor(net, candidate_size=200, device=device)
 else:
     print("The net type is wrong. It should be one of vgg16-ssd, mb1-ssd and mb1-ssd-lite.")
     sys.exit(1)
