@@ -7,6 +7,7 @@ from vision.utils.misc import Timer
 import cv2
 import sys
 import torch
+import time
 
 if len(sys.argv) < 4:
     print('Usage: python run_ssd_example.py <net type>  <model path> <label path> [video file]')
@@ -68,6 +69,8 @@ else:
 
 
 timer = Timer()
+start = time.time()
+
 while True:
     ret, orig_image = cap.read()
     if orig_image is None:
@@ -76,7 +79,12 @@ while True:
     timer.start()
     boxes, labels, probs = predictor.predict(image, 10, 0.4)
     interval = timer.end()
-    print('Time: {:.2f}s, Detect Objects: {:d}.'.format(interval, labels.size(0)))
+    now = time.time()
+    fps = 1. / (now - start)
+    start = now
+
+    print('FPS {:.2f} Time: {:.2f}s, Detect Objects: {:d}.'.format(fps, interval, labels.size(0)))
+
     for i in range(boxes.size(0)):
         box = boxes[i, :]
         label = class_names[labels[i]]+": "+str(probs[i])
